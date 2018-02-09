@@ -70,7 +70,7 @@ public func ABAddressBookRequestAccess() -> Promise<ABAddressBook> {
             }
         }
 
-        return Promise(value: book)
+        return .value(book)
     }
 }
 
@@ -90,7 +90,7 @@ private func ABAddressBookRequestAccess() -> Promise<(Bool, ABAddressBook)> {
     }
 
     let book: ABAddressBook = ubook.takeRetainedValue()
-    return Promise(.pending) { seal in
+    return Promise { seal in
         ABAddressBookRequestAccessWithCompletion(book) { granted, error in
             if let error = error {
                 seal.reject(NSError(CFError: error))

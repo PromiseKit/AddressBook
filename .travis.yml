@@ -6,18 +6,18 @@ language: objective-c
 stages:
   - lint
   - test
+matrix:
+  include:
+    - {osx_image: xcode8.3, env: SWIFT=3.1}
+    - {osx_image: xcode9.2, env: SWIFT=3.2}
+    - {osx_image: xcode9.4, env: SWIFT=3.3}
+    - {osx_image: xcode10,  env: SWIFT=3.4}
+    - {osx_image: xcode9.2, env: SWIFT=4.0}
+    - {osx_image: xcode9.4, env: SWIFT=4.1}
+    - {osx_image: xcode10,  env: SWIFT=4.2}
 jobs:
   include:
     - stage: lint
-      matrix:
-        include:
-          - {osx_image: xcode8.3, env: SWIFT=3.1}
-          - {osx_image: xcode9.2, env: SWIFT=3.2}
-          - {osx_image: xcode9.4, env: SWIFT=3.3}
-          - {osx_image: xcode10,  env: SWIFT=3.4}
-          - {osx_image: xcode9.2, env: SWIFT=4.0}
-          - {osx_image: xcode9.4, env: SWIFT=4.1}
-          - {osx_image: xcode10,  env: SWIFT=4.2}
       cache: cocoapods
       before_install:
         gem install cocoapods --prerelease --version 1.6.0.beta.1
@@ -35,8 +35,6 @@ jobs:
       env:
         - DST='OS=12.0,name=iPhone SE' PLAT=iOS
         - DST='arch=x86_64' PLAT=macOS
-      os: osx
-      language: objective-c
       cache:
         directories:
         - Carthage

@@ -3,22 +3,13 @@ branches:
     - master
 os: osx
 language: objective-c
-stages:
-  - lint
-  - test
-matrix:
-  include:
-    - {osx_image: xcode8.3, env: SWIFT=3.1}
-    - {osx_image: xcode9.2, env: SWIFT=3.2}
-    - {osx_image: xcode9.4, env: SWIFT=3.3}
-    - {osx_image: xcode10,  env: SWIFT=3.4}
-    - {osx_image: xcode9.2, env: SWIFT=4.0}
-    - {osx_image: xcode9.4, env: SWIFT=4.1}
-    - {osx_image: xcode10,  env: SWIFT=4.2}
 jobs:
   include:
-    - stage: lint
+    - &lint
+      stage: lint
       cache: cocoapods
+      osx_image: 8.3
+      env: SWIFT=3.1
       before_install:
         gem install cocoapods --prerelease --version 1.6.0.beta.1
       install:
@@ -29,12 +20,30 @@ jobs:
         rm -rf Extensions/AddressBook/Sources
         cp -R ../../../Sources Extensions/AddressBook
         pod lib lint --subspec=PromiseKit/AddressBook --fail-fast --swift-version=$SWIFT
-
-    - stage: test
+    - <<: *lint
+      osx_image: xcode9.2
+      env: SWIFT=3.2
+    - <<: *lint
+      osx_image: xcode9.4
+      env: SWIFT=3.3
+    - <<: *lint
       osx_image: xcode10
-      env:
-        - DST='OS=12.0,name=iPhone SE' PLAT=iOS
-        - DST='arch=x86_64' PLAT=macOS
+      env: SWIFT=3.4
+    - <<: *lint
+      osx_image: xcode9.2
+      env: SWIFT=4.0
+    - <<: *lint
+      osx_image: xcode9.4
+      env: SWIFT=4.1
+    - <<: *lint
+      osx_image: xcode10
+      env: SWIFT=4.2
+      
+    - &test
+      stage: test
+      osx_image: xcode10
+      env: DST='OS=12.0,name=iPhone SE' PLAT=iOS
+      name: iOS Tests
       cache:
         directories:
         - Carthage
@@ -44,3 +53,6 @@ jobs:
         xcodebuild -scheme PMKAddressBook -target PMKAddressBook -quiet -destination "$DST" SWIFT_TREAT_WARNINGS_AS_ERRORS=YES build
       script:
         xcodebuild -scheme PMKAddressBook -quiet -destination "$DST" test
+    - <<: *test
+      env: DST='arch=x86_64' PLAT=macOS
+      name: macOS Tests

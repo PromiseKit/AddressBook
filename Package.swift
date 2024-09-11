@@ -18,7 +18,7 @@ target.dependencies = ["PromiseKit"]
 
 let testTarget: Target = .testTarget(name: name + "Tests")
 testTarget.path = "Tests"
-target.dependencies = ["PMKAddressBook"]
+testTarget.dependencies = ["PMKAddressBook"]
 
 pkg.targets = [target, testTarget]
 
